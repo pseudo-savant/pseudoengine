@@ -1,5 +1,7 @@
 #include <stdio.h>
+#include <iostream>
 #include <cstdlib>
+#include <iterator>
 #include <SDL.h>
 #include <string>
 #include <vector>
@@ -12,7 +14,18 @@ const int SCREEN_HEIGHT = 640;
 
 char windowTitle[64];
 
-std::vector<SDL_Scancode> inputStack;
+vector<SDL_Scancode> inputStack;
+
+bool keypressed(SDL_Scancode s){
+    if (find(inputStack.begin(), inputStack.end(), s) != inputStack.end()) { return true; } else { return false; }
+}
+
+void displayVectorData(std::vector<SDL_Scancode> array){
+    for (int i = 0; i < array.size(); i++){
+        cout << array[i];
+    }
+
+}
 
 int main( int argc, char* args[] ){
     
@@ -58,17 +71,17 @@ int main( int argc, char* args[] ){
                 bool quit = false; 
                 while( quit == false ){
                     while( SDL_PollEvent( &e ) ){
-
+                        inputStack.clear();
                         if( e.type == SDL_QUIT ) quit = true; 
                         else if( e.type == SDL_KEYDOWN ){
                             inputStack.push_back(e.key.keysym.scancode);
                         }
-                        if (std::find(inputStack.begin(), inputStack.end(), SDL_SCANCODE_W) != inputStack.end()){
+                        if (keypressed(SDL_SCANCODE_DOWN)){
                             SDL_Rect fillRect = { SCREEN_WIDTH / 4, SCREEN_HEIGHT / 4, SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 };
                             SDL_SetRenderDrawColor( gRenderer, 0x00, 0x00, 0xFF, 0xFF );		
 				            SDL_RenderFillRect( gRenderer, &fillRect );
-                            printf("lol");
                         }
+                        std::copy(inputStack.begin(), inputStack.end(), std::ostream_iterator<SDL_Scancode>(std::cout, " "));
                     }
                 }
                 SDL_SetRenderDrawColor( gRenderer, 0xFF, 0xFF, 0xFF, 0xFF );
